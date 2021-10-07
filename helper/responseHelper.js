@@ -16,14 +16,14 @@ module.exports = {
   sendUnauthorizedResponse: (res, data) => {
     return res.status(401).send({
       success: false,
-      message: "unauthorized access",
+      message: "Unauthorized access",
       data: data,
     });
   },
   sendForbiddenResponse: (res,message, data) => {
     return res.status(403).send({
       success: false,
-      message: message ? message : "forbidden access",
+      message: message ? message : "Forbidden access",
       data: data,
     });
   },
@@ -40,10 +40,10 @@ module.exports = {
       message: message ? message : "unable to process data",
     });
   },
-  sendCatchResponse: (res, message) => {
+  sendCatchResponse: (res, err) => {
     return res.status(500).send({
       success: false,
-      message: message ? message : "internal server error",
+      message: (typeof err === "string") ? err : (err.message ? err.message : "internal server error"),
     });
   },
   sendUserInactiveResponse: (res, message) => {

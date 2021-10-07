@@ -1,19 +1,17 @@
 {
-  "name": "node-js-getting-started",
+  "name": "express-mongo-api-server",
   "version": "0.3.0",
   "description": "A sample Node.js app using Express 4",
   "engines": {
     "node": "14.x"
   },
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "nodemon test.js",
-    "migration": "sequelize db:migrate",
-    "sequelize": "node_modules/.bin/sequelize"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "test": "nodemon test.js"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -23,24 +21,22 @@
     "express-validation": "^3.0.8",
     "express-validator": "^6.11.1",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.9",
     "morgan": "^1.10.0",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.3.0",
-    "nodemon": "^2.0.7",
-    "sequelize": "^6.6.2",
-    "sequelize-cli": "^6.2.0"
+    "nodemon": "^2.0.7"
   },
   "devDependencies": {
+    "crypto-js": "^4.1.1",
     "got": "^11.3.0",
     "tape": "^4.7.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
+    "url": "https://github.com/JayU9769/express-mongo-api-server"
   },
   "keywords": [
     "node",
-    "heroku",
+    "mongodb",
     "express"
   ],
   "license": "MIT"

@@ -1,10 +1,12 @@
-const db = require('../models');
+const {Admin} = require('../models');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const {sendSuccessResponse, sendUnauthorizedResponse, sendCatchResponse, sendValidationResponse} = require("../helper/responseHelper");
 const accessTokenSecret = process.env.SECRET_TOKEN || 'youraccesstokensecret';
+const tokenValidationTime = process.env.TOKEN_VALIDATION_TIME;
 const { body,validationResult} = require('express-validator');
-const bcrypt = require('bcryptjs');
+const CryptoJS = require("crypto-js");
+const {use} = require("express/lib/router");
 
 exports.validate = (method) => {
     switch (method) {
@@ -34,7 +36,7 @@ exports.login = async (req, res) => {
             return sendValidationResponse(res, errors);
         }
 
-        let user = await db.Admin.findOne({
+        let user = await Admin.findOne({
             raw: true,
             where: {
                 email: email,
@@ -42,17 +44,24 @@ exports.login = async (req, res) => {
             }
         });
 
-        if (user && (await bcrypt.compare(password, user.password))) {
+        user = user.toObject();
+
+        var hashedPassword = CryptoJS.AES.decrypt(user.password, process.env.SECRET_TOKEN);
+
+        let dbPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
+
+        if (user && (dbPassword === password)) {
 
             // Generate an access token
             user.token = jwt.sign({
-                id: user.id,
+                id: user._id,
                 email: user.email,
                 role: 'admin',
                 createdAt: user.createdAt
-            }, accessTokenSecret, {expiresIn: "2h"});
+            }, accessTokenSecret, {expiresIn: tokenValidationTime});
 
             delete user.password;
+            delete user.__v;
 
             return sendSuccessResponse(res,"Login successfully", user)
         } else {
@@ -75,37 +84,34 @@ exports.register = async (req, res) => {
             return sendValidationResponse(res, errors);
         }
 
-        const oldUser = await db.Admin.findOne({
-            where: {
-                email: email
-            }
-        });
-
-        if (oldUser) {
-            return res.status(409).send("User Already Exist. Please Login");
-        }
-
         // Create user in our database
-        const user = await db.Admin.create({
-            name,
+        let user = await Admin.create({
+            name: name,
             email: email.toLowerCase(),
-            email_verified_at: new Date(),
-            status: 1,
-            password: await bcrypt.hash(password,10),
+            emailVerifiedAt: new Date(),
+            status: "active",
+            password: CryptoJS.AES.encrypt(
+              password,
+              process.env.SECRET_TOKEN
+            ).toString(),
         });
+
+        user = user.toObject();
+
+        delete user.password;
+        delete user.__v;
 
         // Create token
-        // save user token
         user.token = jwt.sign(
           {
-              id: user.id,
+              id: user._id,
               email: user.email,
               role: 'admin',
               createdAt: user.createdAt
           },
           accessTokenSecret,
           {
-              expiresIn: "2h",
+              expiresIn: tokenValidationTime,
           }
         );
 

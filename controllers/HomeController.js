@@ -1,4 +1,3 @@
-const db = require('../models');
 
 
 exports.dropDownData = async function (req, res) {
@@ -7,27 +6,7 @@ exports.dropDownData = async function (req, res) {
         const { type } = req.query;
         let data = [];
         switch (type) {
-            case "product":
-                data = await db.Product.findAll({
-                    attributes: ['id', ['name', 'label']],
-                    order: [
-                        ['id', 'DESC']
-                    ],
-                    where: {
-                        status: 1
-                    }
-                });
-                break;
-            case "supplier":
-                data = await db.Supplier.findAll({
-                    attributes: ['id', ['name', 'label']],
-                    order: [
-                        ['id', 'DESC']
-                    ],
-                    where: {
-                        status: 1
-                    }
-                });
+            case "":
                 break;
         }
 

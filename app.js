@@ -9,6 +9,11 @@ const FRONT_END_URL = process.env.FRONT_END_URL || "http://localhost:8081"
 
 const indexRouter = require('./routes/index');
 const adminRouter = require('./routes/admin');
+const {init} = require("./config/config");
+
+
+// Database connection init...
+init();
 
 const app = express();
 
